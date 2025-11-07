@@ -78,7 +78,7 @@
 
         {{-- Content --}}
         <section class="col-span-12 md:col-span-9">
-          <h1 class="text-4xl font-extrabold tracking-tight">Submission status</h1>
+          <h1 class="text-4xl font-extrabold tracking-tight">Submission History</h1>
 
           {{-- Search + Filter --}}
           <div class="mt-5 flex flex-col md:flex-row md:items-center gap-3 md:gap-4 max-w-3xl">

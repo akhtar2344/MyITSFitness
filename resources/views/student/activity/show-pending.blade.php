@@ -12,21 +12,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     html, body { font-family: 'Poppins', system-ui, -apple-system, Segoe UI, Roboto, 'Helvetica Neue', Arial; }
-    .send-btn {
-      transition: all .2s ease;
-    }
-    .send-btn:disabled {
-      opacity: .5;
-      cursor: not-allowed;
-    }
-    .send-btn:not(:disabled):hover {
-      filter: brightness(1.1);
-      transform: translateY(-1px);
-    }
-    .send-btn:not(:disabled):active {
-      filter: brightness(.95);
-      transform: translateY(1px);
-    }
+    .send-btn { transition: all .2s ease; }
+    .send-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .send-btn:not(:disabled):hover { filter: brightness(1.1); transform: translateY(-1px); }
+    .send-btn:not(:disabled):active { filter: brightness(.95); transform: translateY(1px); }
   </style>
 </head>
 
@@ -171,7 +160,31 @@
     </div>
   </main>
 
+  {{-- Modal: Cancel Submission --}}
+  <div id="cancelModal" class="hidden fixed inset-0 z-[100]">
+    <div class="absolute inset-0 bg-black/60"></div>
+    <div class="relative h-full w-full flex items-center justify-center p-4">
+      <div class="w-[540px] max-w-full rounded-2xl bg-white shadow-2xl">
+        <div class="p-6 text-center">
+          <h3 class="text-[22px] font-bold text-[#3b6bff] mb-4">Cancel this submission?</h3>
+          <p class="text-slate-700 mb-6">Your current progress will not be saved.</p>
+
+          <div class="grid grid-cols-2 divide-x">
+            <button id="confirmYes" class="py-3 font-semibold text-[#3b6bff] hover:bg-slate-50 transition">Yes</button>
+            <button id="confirmNo" class="py-3 font-semibold text-slate-900 hover:bg-slate-50 transition">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {{-- Toast --}}
+  <div id="toast" class="hidden fixed bottom-6 right-6 z-[110] px-4 py-3 rounded-lg bg-slate-900 text-white shadow-lg">
+    <span id="toastText" class="text-sm font-medium">Activity has been discarded.</span>
+  </div>
+
   <script>
+    // Avatar overlay
     (function () {
       const avatar  = document.getElementById('userAvatar');
       const overlay = document.getElementById('logoutOverlay');
@@ -193,19 +206,62 @@
       });
     })();
 
-    document.getElementById('cancelBtn')?.addEventListener('click', () => {
-      alert('Are you sure you want to cancel this submission?');
-    });
+    // Cancel modal logic
+    (function () {
+      const openBtn  = document.getElementById('cancelBtn');
+      const modal    = document.getElementById('cancelModal');
+      const yesBtn   = document.getElementById('confirmYes');
+      const noBtn    = document.getElementById('confirmNo');
+      const toast    = document.getElementById('toast');
+      const toastTxt = document.getElementById('toastText');
 
-    // --- Interaktif Send Button
+      function openModal(){ modal.classList.remove('hidden'); }
+      function closeModal(){ modal.classList.add('hidden'); }
+
+      openBtn?.addEventListener('click', openModal);
+
+      // No → back
+      noBtn?.addEventListener('click', () => {
+        closeModal();
+        history.back();
+      });
+
+      // Yes → show toast then redirect
+      yesBtn?.addEventListener('click', () => {
+        closeModal();
+        // show toast
+        toastTxt.textContent = 'Activity has been discarded.';
+        toast.classList.remove('hidden');
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(8px)';
+        requestAnimationFrame(() => {
+          toast.style.transition = 'all .25s ease';
+          toast.style.opacity = '1';
+          toast.style.transform = 'translateY(0)';
+        });
+
+        // Redirect after short delay (ubah rute jika beda)
+        setTimeout(() => {
+          window.location.href = "{{ route('student.status') }}";
+        }, 900);
+      });
+
+      // close on backdrop / Esc
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (!modal.classList.contains('hidden') && e.key === 'Escape') closeModal();
+      });
+    })();
+
+    // Interaktif Send Button
     (function () {
       const input = document.getElementById('commentInput');
       const btn = document.getElementById('sendBtn');
       const form = document.getElementById('commentForm');
 
-      function updateState() {
-        btn.disabled = !input.value.trim();
-      }
+      function updateState() { btn.disabled = !input.value.trim(); }
 
       input.addEventListener('input', updateState);
       form.addEventListener('submit', function(e) {

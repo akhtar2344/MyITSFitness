@@ -93,7 +93,7 @@
                 <span id="filterLabel">All Status</span>
                 <svg class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 transition group-data-[open=true]:rotate-180"
                      id="filterChevron" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.168l3.71-2.94a.75.75 0 01.94 1.17l-4.2 3.33a.75.75 0 01-.94 0l-4.2-3.33a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 10.168l3.71-2.94a.75.75 0 01.94 1.17l-4.2 3.33a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
                 </svg>
               </button>
 
@@ -177,9 +177,9 @@
 
                   @foreach ($rows as $i => $r)
                     <tr class="student-row group cursor-pointer {{ $i % 2 ? 'bg-white' : 'bg-slate-50/40' }} hover:bg-slate-50 transition-colors duration-200" data-status="{{ $r['status'] }}">
-                      {{-- NAME (link to show) --}}
+                      {{-- NAME (link to status-account) --}}
                       <td class="px-8 py-4">
-                        <a href="{{ route('lecturer.students.show', ['nrp' => $r['nrp']]) }}"
+                        <a href="{{ route('lecturer.status.account', ['nrp' => $r['nrp']]) }}"
                            class="font-semibold text-slate-900 transition duration-200
                                   group-hover:text-transparent group-hover:bg-clip-text
                                   group-hover:bg-gradient-to-r group-hover:from-[#5b83ff] group-hover:to-[#7b61ff]">
@@ -187,9 +187,9 @@
                         </a>
                       </td>
 
-                      {{-- NRP (link to show) --}}
+                      {{-- NRP (link to status-account) --}}
                       <td class="px-8 py-4">
-                        <a href="{{ route('lecturer.students.show', ['nrp' => $r['nrp']]) }}"
+                        <a href="{{ route('lecturer.status.account', ['nrp' => $r['nrp']]) }}"
                            class="inline-block font-semibold text-slate-600 transition duration-200
                                   group-hover:text-transparent group-hover:bg-clip-text
                                   group-hover:bg-gradient-to-r group-hover:from-[#5b83ff] group-hover:to-[#7b61ff]">
@@ -197,9 +197,9 @@
                         </a>
                       </td>
 
-                      {{-- PROGRAM (link to show) --}}
+                      {{-- PROGRAM (link to status-account) --}}
                       <td class="px-8 py-4">
-                        <a href="{{ route('lecturer.students.show', ['nrp' => $r['nrp']]) }}"
+                        <a href="{{ route('lecturer.status.account', ['nrp' => $r['nrp']]) }}"
                            class="inline-block font-semibold text-slate-600 transition duration-200
                                   group-hover:text-transparent group-hover:bg-clip-text
                                   group-hover:bg-gradient-to-r group-hover:from-[#5b83ff] group-hover:to-[#7b61ff]">

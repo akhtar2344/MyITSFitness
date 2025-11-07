@@ -70,6 +70,12 @@ Route::prefix('student')->name('student.')->group(function () {
     // ===== Status Page =====
     Route::view('/status', 'student.status-page')->name('status');
 
+    // ===== Status -> Account Detail (new) =====
+    Route::get('/status/{nrp}', function (string $nrp) {
+        // render blade baru status-account; sementara boleh statis (Harry)
+        return view('student.status-account', compact('nrp'));
+    })->whereNumber('nrp')->name('status.account');
+
     // ===== Submit Page =====
     Route::view('/submit', 'student.submit')->name('submit');
 
@@ -126,6 +132,12 @@ Route::prefix('lecturer')->name('lecturer.')->group(function () {
         // Kalau nanti mau dinamis, tinggal lempar data di sini.
         return view('lecturer.show', compact('nrp'));
     })->whereNumber('nrp')->name('students.show');
+
+    /* ====== NEW: Lecturer Status Account (untuk halaman seperti figma) ====== */
+    Route::get('/status/{nrp}', function (string $nrp) {
+        return view('lecturer.status-account', compact('nrp'));
+    })->whereNumber('nrp')->name('status.account');
+    /* ======================================================================= */
 
     // (Opsional lama) contoh /lecturer/show dummy — dibiarkan karena path beda
     Route::get('/show', function () {

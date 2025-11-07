@@ -112,7 +112,7 @@
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="w-5 h-5 text-indigo-600" fill="currentColor">
                         <path d="M7 3a2 2 0 0 0-2 2v14l7-3 7 3V5a2 2 0 0 0-2-2H7z"/>
                       </svg>
-                      <span>SKEM 30</span>
+                      <span>SKEM 4</span>
                     </span>
                   </div>
                 </div>
