@@ -9,26 +9,103 @@ class Submission extends Model
 {
     use HasFactory;
 
+    /*
+    |--------------------------------------------------------------------------
+    | STATUS CONSTANTS
+    |--------------------------------------------------------------------------
+    */
+    public const STATUS_PENDING       = 'pending';
+    public const STATUS_ACCEPTED      = 'accepted';
+    public const STATUS_REJECTED      = 'rejected';
+    public const STATUS_NEED_REVISION = 'need_revision';
+
     protected $table = 'submissions';
-    protected $primaryKey = 'id';
-    public $incrementing = false;       // ✅
-    protected $keyType = 'string';      // ✅
+
     protected $fillable = [
-        'id',
         'student_id',
-        'activity_id',
+        'lecturer_id',
+        'activity',
+        'location',
         'duration_minutes',
         'status',
-        'notes',
+        'submitted_at',
+        'reviewed_at',
     ];
+
+    protected $casts = [
+        'submitted_at'     => 'datetime',
+        'reviewed_at'      => 'datetime',
+        'duration_minutes' => 'integer',
+    ];
+
+    /*
+    |--------------------------------------------------------------------------
+    | RELATIONSHIPS
+    |--------------------------------------------------------------------------
+    */
 
     public function student()
     {
-        return $this->belongsTo(Student::class, 'student_id');
+        return $this->belongsTo(People::class, 'student_id');
     }
 
-    public function activity()
+    public function lecturer()
     {
-        return $this->belongsTo(Activity::class, 'activity_id');
+        return $this->belongsTo(People::class, 'lecturer_id');
+    }
+
+    public function files()
+    {
+        return $this->hasMany(Shared::class);
+    }
+
+    public function notifies()
+    {
+        return $this->hasMany(Notify::class);
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | ACCESSORS
+    |--------------------------------------------------------------------------
+    */
+
+    public function getDurationHumanAttribute(): string
+    {
+        $m = (int) ($this->duration_minutes ?? 0);
+        if ($m <= 0) return '0m';
+
+        $h = intdiv($m, 60);
+        $r = $m % 60;
+
+        if ($h && $r) return "{$h}h {$r}m";
+        if ($h) return "{$h}h";
+        return "{$r}m";
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SCOPES
+    |--------------------------------------------------------------------------
+    */
+
+    public function scopePending($q)
+    {
+        return $q->where('status', self::STATUS_PENDING);
+    }
+
+    public function scopeAccepted($q)
+    {
+        return $q->where('status', self::STATUS_ACCEPTED);
+    }
+
+    public function scopeRejected($q)
+    {
+        return $q->where('status', self::STATUS_REJECTED);
+    }
+
+    public function scopeNeedRevision($q)
+    {
+        return $q->where('status', self::STATUS_NEED_REVISION);
     }
 }
