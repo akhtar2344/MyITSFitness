@@ -156,18 +156,17 @@
                 <span class="text-slate-700">Submission Status</span>
               </h2>
 
-              <div class="mt-6 grid grid-cols-12 gap-6">
-                {{-- Donut interaktif (Chart.js) --}}
-                <div class="col-span-12 md:col-span-6 flex items-center justify-center">
-                  <div class="relative w-56 h-56">
-                    <canvas id="submissionDonut" width="224" height="224"></canvas>
+              <div class="mt-6 grid grid-cols-12 gap-6 items-center">
+                {{-- Donut interaktif (Chart.js) - DIPERKECIL --}}
+                <div class="col-span-12 md:col-span-5 flex items-center justify-center">
+                  <div class="relative w-44 h-44"> {{-- was w-56 h-56 --}}
+                    <canvas id="submissionDonut" width="176" height="176"></canvas>
                   </div>
                 </div>
 
-                {{-- Legend (mengambil angka dari $stats agar sinkron) --}}
-                <div class="col-span-12 md:col-span-6">
+                {{-- Legend - DIPERKECIL & RAPIH --}}
+                <div class="col-span-12 md:col-span-7">
                   @php
-                    // Angka sesuai data saat ini; bisa diganti dari query nanti
                     $stats = [
                       'Accepted Submission' => 4,
                       'Pending Submission'  => 2,
@@ -176,24 +175,24 @@
                     ];
                     $totalSubmission = array_sum($stats);
                   @endphp
-                  <ul class="space-y-3 text-sm">
-                    <li class="flex items-center gap-3">
-                      <span class="w-3 h-3 rounded-full bg-emerald-500"></span>
+                  <ul class="space-y-2 text-[13px] leading-5"> {{-- was text-sm space-y-3 --}}
+                    <li class="flex items-center gap-2.5">
+                      <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
                       <span>Accepted Submission</span>
                       <span class="ml-auto font-semibold">{{ $stats['Accepted Submission'] }}</span>
                     </li>
-                    <li class="flex items-center gap-3">
-                      <span class="w-3 h-3 rounded-full bg-blue-500"></span>
+                    <li class="flex items-center gap-2.5">
+                      <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span>
                       <span>Pending Submission</span>
                       <span class="ml-auto font-semibold">{{ $stats['Pending Submission'] }}</span>
                     </li>
-                    <li class="flex items-center gap-3">
-                      <span class="w-3 h-3 rounded-full bg-amber-500"></span>
+                    <li class="flex items-center gap-2.5">
+                      <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
                       <span>Need Revision</span>
                       <span class="ml-auto font-semibold">{{ $stats['Need Revision'] }}</span>
                     </li>
-                    <li class="flex items-center gap-3">
-                      <span class="w-3 h-3 rounded-full bg-rose-500"></span>
+                    <li class="flex items-center gap-2.5">
+                      <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
                       <span>Rejected Submission</span>
                       <span class="ml-auto font-semibold">{{ $stats['Rejected Submission'] }}</span>
                     </li>
@@ -205,27 +204,26 @@
                       const ctx = document.getElementById('submissionDonut')?.getContext('2d');
                       if (!ctx) return;
 
-                      // Data dari PHP -> JS (inline)
                       const labels = ['Accepted Submission', 'Pending Submission', 'Need Revision', 'Rejected Submission'];
                       const data = [{{ $stats['Accepted Submission'] }}, {{ $stats['Pending Submission'] }}, {{ $stats['Need Revision'] }}, {{ $stats['Rejected Submission'] }}];
-
-                      // Warna mengikuti Tailwind: emerald-500, blue-500, amber-500, rose-500
                       const colors = ['#10B981', '#3B82F6', '#F59E0B', '#F43F5E'];
 
-                      // Plugin untuk menuliskan total di tengah
+                      // Plugin center text - font diperkecil agar proporsional dgn chart
                       const centerText = {
                         id: 'centerText',
-                        afterDraw(chart, args, opts) {
-                          const { ctx, chartArea: { width, height } } = chart;
+                        afterDraw(chart) {
+                          const { ctx } = chart;
+                          const c = chart.getDatasetMeta(0).data[0];
+                          if (!c) return;
                           ctx.save();
-                          ctx.font = '700 28px Poppins, system-ui';
+                          ctx.font = '700 22px Poppins, system-ui';   // was 28px
                           ctx.fillStyle = '#0f172a';
                           ctx.textAlign = 'center';
                           ctx.textBaseline = 'middle';
-                          ctx.fillText('{{ $totalSubmission }}', chart.getDatasetMeta(0).data[0].x, chart.getDatasetMeta(0).data[0].y - 8);
-                          ctx.font = '500 12px Poppins, system-ui';
+                          ctx.fillText('{{ $totalSubmission }}', c.x, c.y - 6);
+                          ctx.font = '500 11px Poppins, system-ui';   // was 12px
                           ctx.fillStyle = '#64748b';
-                          ctx.fillText('Submission', chart.getDatasetMeta(0).data[0].x, chart.getDatasetMeta(0).data[0].y + 14);
+                          ctx.fillText('Submission', c.x, c.y + 12);
                           ctx.restore();
                         }
                       };
@@ -271,18 +269,33 @@
               </div>
             </div>
 
-            {{-- Kalender dummy --}}
+            {{-- Kalender realtime --}}
             <div class="rounded-2xl bg-white border shadow-sm p-6">
-              <h2 class="font-semibold text-lg">November 2024</h2>
+              @php
+                $year  = (int) date('Y');
+                $month = (int) date('n');
+                $today = (int) date('j');
+                $monthNames = [1=>'January','February','March','April','May','June','July','August','September','October','November','December'];
+                $monthName  = $monthNames[$month];
+                $weekdayLabels = ['S','M','T','W','T','F','S'];
+                $firstWeekday = (int) date('w', strtotime("$year-$month-01"));
+                $daysInMonth  = cal_days_in_month(CAL_GREGORIAN, $month, $year);
+              @endphp
+
+              <h2 class="font-semibold text-lg">{{ $monthName }} {{ $year }}</h2>
               <div class="mt-4 grid grid-cols-7 gap-2 text-center text-sm">
-                @php
-                  $days = ['S','M','T','W','T','F','S'];
-                @endphp
-                @foreach($days as $d)
+                @foreach($weekdayLabels as $d)
                   <div class="text-slate-500">{{ $d }}</div>
                 @endforeach
-                @for($i=1;$i<=30;$i++)
-                  <div class="py-2 rounded-xl border {{ $i==5 ? 'ring-2 ring-[#6b63ff] font-semibold' : 'bg-white' }}">{{ $i }}</div>
+                @for($k = 0; $k < $firstWeekday; $k++)
+                  <div></div>
+                @endfor
+                @for($i = 1; $i <= $daysInMonth; $i++)
+                  @php
+                    $isToday = ($i === $today);
+                    $classes = $isToday ? 'ring-2 ring-[#6b63ff] font-semibold' : 'bg-white';
+                  @endphp
+                  <div class="py-2 rounded-xl border {{ $classes }}">{{ $i }}</div>
                 @endfor
               </div>
             </div>

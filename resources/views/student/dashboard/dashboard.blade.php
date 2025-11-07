@@ -117,6 +117,7 @@
 
             {{-- Kiri --}}
             <div class="col-span-12 lg:col-span-8">
+
               <h1 class="text-4xl font-extrabold tracking-tight">
                 Hi, <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#5b83ff] to-[#7b61ff]">Student</span>
               </h1>
@@ -129,8 +130,8 @@
                   <div class="flex flex-col items-center">
                     <canvas id="skemChart" width="68" height="68"></canvas>
                     <div class="mt-2 text-center">
-                      <div class="text-lg font-semibold">30</div>
-                      <div class="text-xs text-slate-500">SKEM</div>
+                      <div class="text-lg font-semibold">3</div>
+                      <div class="text-xs text-slate-500">Activity</div>
                     </div>
                   </div>
 
@@ -168,6 +169,7 @@
 
               {{-- Timeline --}}
               <div class="mt-6 space-y-6 max-h-[760px] overflow-y-auto nice-scroll pr-1">
+
                 {{-- Item 1 (terbaru) => Pending --}}
                 <a href="{{ route('student.activity.show.pending') }}"
                    class="group relative block rounded-2xl bg-white border shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg">
@@ -272,9 +274,9 @@
               <div class="relative rounded-2xl overflow-hidden shadow-sm border eqH flex items-center justify-center">
                 <img src="{{ asset('images/academic-calendar-student.png') }}" class="absolute inset-0 w-full h-full object-cover" alt="Calendar">
                 <div class="absolute inset-0 p-6 text-white">
-                  <div class="text-3xl font-bold leading-tight">Tuesday</div>
-                  <div class="text-sm mt-1">14 October 2025</div>
-                  <div class="text-sm mt-2 opacity-90">8th Lecture Week</div>
+                  <div id="cal-day" class="text-3xl font-bold leading-tight">Tuesday</div>
+                  <div id="cal-date" class="text-sm mt-1">14 October 2025</div>
+                  <div id="cal-week" class="text-sm mt-2 opacity-90">8th Lecture Week</div>
                 </div>
               </div>
 
@@ -290,14 +292,15 @@
     </div>
   </main>
 
+  {{-- SKEM Chart --}}
   <script>
     const ctx = document.getElementById('skemChart').getContext('2d');
     new Chart(ctx, {
       type: 'doughnut',
       data: {
-        labels: ['Completed', 'Remaining'],
+        labels: ['Activity', 'Remaining'],
         datasets: [{
-          data: [70, 30],
+          data: [3, 29],
           backgroundColor: ['#3B82F6', '#E5E7EB'],
           borderWidth: 0,
           cutout: '70%',
@@ -309,5 +312,39 @@
       }
     });
   </script>
+
+  {{-- ✅ Real-time academic calendar --}}
+  <script>
+    (function () {
+      const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+      const months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+      const now = new Date();
+      const dayName = days[now.getDay()];
+      const dateNum = now.getDate();
+      const monthName = months[now.getMonth()];
+      const yearNum = now.getFullYear();
+
+      // Atur awal semester (example: 1 Aug)
+      const ACADEMIC_START = new Date(yearNum, 7, 1);
+
+      const week = Math.max(1, Math.floor((now - ACADEMIC_START) / (1000*60*60*24*7)) + 1);
+
+      function ordinal(n){
+        const s = ["th","st","nd","rd"];
+        const v = n % 100;
+        return n + (s[(v - 20) % 10] || s[v] || s[0]);
+      }
+
+      const elDay  = document.getElementById("cal-day");
+      const elDate = document.getElementById("cal-date");
+      const elWeek = document.getElementById("cal-week");
+
+      if (elDay)  elDay.textContent  = dayName;
+      if (elDate) elDate.textContent = `${dateNum} ${monthName} ${yearNum}`;
+      if (elWeek) elWeek.textContent = `${ordinal(week)} Lecture Week`;
+    })();
+  </script>
+
 </body>
 </html>
